@@ -9,7 +9,11 @@ webSocketServer.on('connection', webSocket => {
 
     webSocket.on('message', messageEvent => {
         console.log('A message was sent')
-        webSocket.send(messageEvent);
+        webSocketServer.clients.forEach( client => {
+            if (client.readyState === WebSocket.OPEN){
+                client.send(messageEvent);
+            }
+        })
     });
 });
 
@@ -18,5 +22,5 @@ webSocketServer.on('error', (error) => {
 });
 
 webSocketServer.on('close', function close() {
-    console.log('Connection closed');
+    console.log('Connection closed by the client');
 });

@@ -38,7 +38,7 @@
                     document.getElementsByClassName('chat-content')[0].appendChild(newMess);
                 }
 
-                mySocket.onerror = (error) => {
+                mySocket.onerror = error => {
                     console.error('WebSocket error occurs:', error);
                 };
 
