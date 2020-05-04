@@ -20,23 +20,52 @@
         </div>
         <script>
             let user;
-            let mySocket
+            let mySocket;
+            let connected = false;
             function connect() {
-                // TO IMPLEMENT
+                mySocket = new WebSocket('ws://localhost:3001');
+
+                mySocket.onopen = event => {
+                    console.info('WebSocket connection opened ', event);
+                };
+
+                mySocket.onmessage = e => {
+                    //Affichage du message envoyé
+                    var msg = JSON.parse(e.data);
+                    var newDiv = document.createElement("div");
+                    var newMess = document.createTextNode("["+msg.user+"] "+ msg.message+"\n");
+                    newDiv.append(newMess);
+                    document.getElementsByClassName('chat-content')[0].appendChild(newMess);
+                }
+
+                mySocket.onerror = (error) => {
+                    console.error('WebSocket error occurs:', error);
+                };
+
+                mySocket.onclose = () => {
+                    console.info('WebSocket connection closed');
+                };
             }
 
             function connectUser() {
                 user = document.getElementsByName('chat-name')[0].value;
-                if (user) {
+                if (user && !connected) {
                     connect();
+                    connected = true;
                     document.getElementsByName('chat-message')[0].disabled = false;
                     document.getElementsByClassName('chat-send')[0].disabled = false;
+                    var divWelcome = document.createElement("div");
+                    var messWelc = document.createTextNode("[SERVER] Welcome !\n");
+                    divWelcome.append(messWelc);
+                    document.getElementsByClassName('chat-content')[0].appendChild(messWelc);
                 }
             }
 
             function sendMessage() {
+                //Envoi du message
                 const message = document.getElementsByName('chat-message')[0].value;
-                // TO IMPLEMENT
+
+                mySocket.send(JSON.stringify({user: user, message: message}));
                 document.getElementsByName('chat-message')[0].value = '';
             }
         </script>
